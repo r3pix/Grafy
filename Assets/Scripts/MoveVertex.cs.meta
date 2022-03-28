@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a1814858ba079e449ad15671cb112187
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - vertexPrefab: {fileID: 3332701409534047417, guid: a47480eacdce168418d2f67b66508559, type: 3}
+  - weightPrefab: {fileID: 9176938654805972805, guid: 81c17081eb526b44497c6219907c6726, type: 3}
+  - edgePrefab: {fileID: 3469480035636458883, guid: 8b412fe25183e34469364a5e0ceb3ffc, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
