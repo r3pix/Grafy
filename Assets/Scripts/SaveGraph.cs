@@ -34,8 +34,8 @@ public class SaveGraph : MonoBehaviour
 
         for (int i=0; i < count; i++)
         {
-            tab[tabb[i].Vertex1 - 1, i] = int.Parse(tabb[0].TextDistance.ToString());
-            tab[tabb[i].Vertex2 - 1, i] = - int.Parse(tabb[0].TextDistance.ToString());
+            tab[tabb[i].Vertex2 - 1, i] = int.Parse(tabb[i].TextDistance.ToString());
+            tab[tabb[i].Vertex1 - 1, i] = - int.Parse(tabb[i].TextDistance.ToString());
         }
 
         File.WriteAllLines(@"D:\Grafy\Grafy\MyFile.txt", tab.ToJagged().Select(line => String.Join(" ", line)));
