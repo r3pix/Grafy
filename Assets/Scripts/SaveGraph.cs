@@ -42,29 +42,14 @@ public class SaveGraph : MonoBehaviour
 
         var jaggedTab = incidenceTab.ToJagged();
 
-        bool[] visited = new bool[vertices.ToList().Count];
-        List<int> queue = new List<int>();
+        bool[] result = new bool[vertices.ToList().Count];
 
-        queue.Add(0);
-        visited[0] = true;
-       
-        while (queue.Count > 0)
+        for(int i=0; i<vertices.ToList().Count; i++)
         {
-            var id = queue[0];
-            var incidentIds = GetIncidentIds(vertices.ToList().Count,edgeCount,id,jaggedTab);
-            foreach(var idToAdd in incidentIds)
-            {
-                if (visited[idToAdd] == false)
-                {
-                    queue.Add(idToAdd);
-                    visited[idToAdd] = true;
-                }
-             }
-            queue.Remove(id);
-            
+            result[i] = IntegrityResult(vertices, edgeCount, jaggedTab,i);
         }
-        
-        if (checkResult(visited))
+
+        if (checkResult(result))
         {
             Debug.Log("Spójny");
         }
@@ -72,8 +57,41 @@ public class SaveGraph : MonoBehaviour
         {
             Debug.Log("Niespójny");
         }
+    }
 
 
+    public bool IntegrityResult(GameObject[] vertices, int edgeCount, int[][]jaggedTab, int vertexId)
+    {
+        bool[] visited = new bool[vertices.ToList().Count];
+        List<int> queue = new List<int>();
+
+        queue.Add(vertexId);
+        visited[vertexId] = true;
+
+        while (queue.Count > 0)
+        {
+            var id = queue[0];
+            var incidentIds = GetIncidentIds(vertices.ToList().Count, edgeCount, id, jaggedTab);
+            foreach (var idToAdd in incidentIds)
+            {
+                if (visited[idToAdd] == false)
+                {
+                    queue.Add(idToAdd);
+                    visited[idToAdd] = true;
+                }
+            }
+            queue.Remove(id);
+
+        }
+
+        if (checkResult(visited))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public bool checkResult(bool[] result)
