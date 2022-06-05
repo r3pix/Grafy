@@ -31,6 +31,14 @@ public class GameManager : MonoBehaviour
     public GameObject inputField;
     public GameObject weightPrefab;
     public InputField field;
+    public GameObject modal;
+    public GameObject modalTextObject;
+    public TextMeshProUGUI modalText;
+
+    public GameObject objectv1;
+    public InputField v1;
+    public GameObject objectv2;
+    public InputField v2;
     //public GameObject fireTruckPrefab;
 
     // Start is called before the first frame update
@@ -46,6 +54,22 @@ public class GameManager : MonoBehaviour
         field = inputField.GetComponent<InputField>();
         inputField.transform.position = new Vector3(inputField.transform.position.x, inputField.transform.position.y, -9);
         inputField.SetActive(false);
+
+        modal= GameObject.Find("Modal");
+        modalTextObject = modal.transform.Find("Result").gameObject;
+        modalText = modalTextObject.GetComponent<TextMeshProUGUI>();
+        modal.SetActive(false);
+
+        objectv1 = GameObject.Find("V1");
+        v1 = objectv1.GetComponent<InputField>();
+        //  inputField.transform.position = new Vector3(inputField.transform.position.x, inputField.transform.position.y, -9);
+        objectv1.SetActive(false);
+
+        objectv2 = GameObject.Find("V2");
+        v2 = objectv2.GetComponent<InputField>();
+        // inputField.transform.position = new Vector3(inputField.transform.position.x, inputField.transform.position.y, -9);
+        objectv2.SetActive(false);
+
     }
 
     // Update is called once per frame
@@ -78,20 +102,9 @@ public class GameManager : MonoBehaviour
                     {
                         newID = -1;
                     }
-                    /*else if(returnIndexOfEdge(recentID, newID) != -1)
-                    {
-
-                        recentID = newID;
-                        newID = -1;
-                    }*/
                     else
                     {
                         DisplayTextField();
-                        // Utworzenie krawêdzi miêdzy dwoma wybranymi wierzcho³kami
-                        //if (isWritten)
-                       // {
-                            
-                       // }
                         
                     }
                 }
@@ -117,17 +130,32 @@ public class GameManager : MonoBehaviour
 
     public void CreateEdge(int id1, int id2)
     {
+        GameObject weight1 = GameObject.Find("wEdge " + System.Convert.ToString(id1) + "+" + System.Convert.ToString(id2));
+        GameObject weight2 = GameObject.Find("wEdge " + System.Convert.ToString(id2) + "+" + System.Convert.ToString(id1));
+      
         // Utworzenie nowej krawêdzi o okreœlonej nazwie "Edge x+y" (potrzebne w edytorze) + dodac id krawedzi
 
-
-        string edgeName = "Edge " + System.Convert.ToString(id1) + "+" + System.Convert.ToString(id2)+edgeList.Count.ToString();
+        string edgeName = "Edge " + System.Convert.ToString(id1) + "+" + System.Convert.ToString(id2);//+edgeList.Count.ToString();
         GameObject newObject = (GameObject)Instantiate(edgePrefab, new Vector3(0, 0, 1), Quaternion.identity);
-        newObject.name = edgeName;
-        // Dodanie po³¹czenia do listy krawêdzi, która jest u¿ywana do stworzenia macierzy s¹siedztwa
+        newObject.name = edgeName+edgeList.Count;
+        // Dodanie po³¹czenia do listy krawêdzi
         
-        edgeList.Add(new Edge(id2, id1, GameObject.Find(System.Convert.ToString(id2)), GameObject.Find(System.Convert.ToString(id1)),distanceField,"w" + edgeName, edgeName));
-       
-        //Debug.Log(new Edge(id2, id1, GameObject.Find(System.Convert.ToString(id2)), GameObject.Find(System.Convert.ToString(id1)), distanceField).ToString());
+        if(weight1==null && weight2 == null) //krawedzie musza miecc unikalne nazwy, nazwy wag sa wspoldzielone (jesli nazwy nie sa unikalne to nie beda sie przesuwac krawedzie)
+        {
+            edgeList.Add(new Edge(id2, id1, GameObject.Find(System.Convert.ToString(id2)), GameObject.Find(System.Convert.ToString(id1)), distanceField, "w" + edgeName, edgeName + edgeList.Count));
+           
+        }
+        else if (weight1 == null)
+        {
+            edgeList.Add(new Edge(id2, id1, GameObject.Find(System.Convert.ToString(id2)), GameObject.Find(System.Convert.ToString(id1)), distanceField, "wEdge " + System.Convert.ToString(id2) + "+" + System.Convert.ToString(id1), edgeName + edgeList.Count));
+            
+        }
+        else if (weight2 == null)
+        {
+            edgeList.Add(new Edge(id2, id1, GameObject.Find(System.Convert.ToString(id2)), GameObject.Find(System.Convert.ToString(id1)), distanceField, "wEdge " + System.Convert.ToString(id1) + "+" + System.Convert.ToString(id2), edgeName + edgeList.Count));
+            
+        }
+   
         // Utworzenie wizualnej krawêdzi - oczywiœcie tylko do wyœwietlania, gdy¿
         // sama krawêdŸ jest ju¿ zapisana w liœcie krawêdzi
         LineRenderer lineRenderer = newObject.GetComponent<LineRenderer>();
@@ -139,24 +167,35 @@ public class GameManager : MonoBehaviour
 
         Vector3[] arr = { recentPos.transform.position, newPos.transform.position };
 
-        //Debug.Log(newObject.transform.childCount);
-       
-         GameObject newObject2 = Instantiate(weightPrefab, new Vector3(0, 0, 1), Quaternion.identity);
-         newObject2.name = "w"+edgeName;
-         newObject2.transform.SetParent(canvas.transform);
-        
-        //Debug.Log(newObject2.GetComponent<TextMeshPro>());
-        //text.text = distanceField;
-        // text.transform.position = new Vector3((recentPos.transform.position.x + newPos.transform.position.x) / 2, (recentPos.transform.position.y + newPos.transform.position.y) / 2, -1);
-        //newObject2.AddComponent<TextMeshPro>();
-        TextMeshProUGUI text = newObject2.GetComponent<TextMeshProUGUI>();
-        text.text = distanceField;
-        text.transform.localScale = new Vector3(0.5f,0.5f,0.5f) ;
-        text.transform.position = new Vector3((recentPos.transform.position.x + newPos.transform.position.x +2.115f) / 2, (recentPos.transform.position.y + newPos.transform.position.y) / 2, -1);
+        GameObject newObject2;
 
+        if (weight1==null && weight2 == null)
+        {
+            newObject2 = Instantiate(weightPrefab, new Vector3(0, 0, 1), Quaternion.identity);
+            newObject2.name = "w" + edgeName;
+            newObject2.transform.SetParent(canvas.transform);
+
+            TextMeshProUGUI text = newObject2.GetComponent<TextMeshProUGUI>();
+            text.text = distanceField;
+            text.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            text.transform.position = new Vector3((recentPos.transform.position.x + newPos.transform.position.x + 2.115f) / 2, (recentPos.transform.position.y + newPos.transform.position.y) / 2, -1);
+        }
+        else if(weight2==null)
+        {
+            newObject2 = weight1;
+            TextMeshProUGUI text = newObject2.GetComponent<TextMeshProUGUI>();
+            text.text = text.text + ", " + distanceField;
+        }
+        else if(weight1 == null)
+        {
+            newObject2 = weight2;
+            TextMeshProUGUI text = newObject2.GetComponent<TextMeshProUGUI>();
+            text.text = text.text+", "+distanceField;
+        }
         lineRenderer.SetPositions(arr);
         lineRenderer.startColor = Color.black;
         lineRenderer.endColor = Color.black;
+
     }
 
     // Funkcja zwracaj¹ca indeks z listy krawêdzi tej krawêdzi, która jest miêdzy dwoma wierzcho³kami
@@ -172,6 +211,8 @@ public class GameManager : MonoBehaviour
         }
         return -1;
     }
+
+    
 
     // Znalezienie najmniejszego wolnego ID, które mo¿na potem przypisaæ do wierzcho³ka
     public int findLowestIDAvailable()
@@ -207,7 +248,7 @@ public class GameManager : MonoBehaviour
         return value;
     }
 
-    // D³ugoœæ listy krawêdzi, u¿ywane do tworzenia macierzy s¹siedztwa
+    // D³ugoœæ listy krawêdzi, u¿ywane do tworzenia macierzy incyencji ¹siedztwa
     public int EdgeListLength
     {
         get { return edgeList.Count; }

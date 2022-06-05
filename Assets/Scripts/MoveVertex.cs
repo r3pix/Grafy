@@ -115,7 +115,7 @@ public class MoveVertex : MonoBehaviour
                 //if (weight != null)
                 //    Destroy(weight);
                
-                GameObject edge = GameObject.Find(X.Name);
+                GameObject edge = GameObject.Find(X.Name); //dlatego nazwa krawedzi musi byc unikalna, inaczej przeniesie pierwszy lepszy o takiej nawziw ejesli jest wiele polaczen
                // if(edge!=null)
                      //Destroy(edge);
                 
